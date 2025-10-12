@@ -14,6 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import java.util.Collections;
 import java.util.List;
@@ -70,17 +72,19 @@ class MemoryServiceTest {
                 memoryNode.description(),
                 Collections.emptyList());
 
-        when(toMemoryNode.apply(request)).thenReturn(memoryNode);
+        when(toMemoryNode.apply(request)).thenReturn(Mono.just(memoryNode));
         when(repository.createMemory(memoryNode)).thenReturn(memoryNode);
         when(toMemoryResponse.apply(eq(memoryNode), any())).thenReturn(expectedResponse);
 
-        final var result = memoryService.create(request);
-
-        assertNotNull(result);
-        assertEquals(memoryNode.id(), result.id());
-        assertEquals(memoryNode.name(), result.name());
-        assertEquals(memoryNode.description(), result.description());
-        assertTrue(result.suggestions().isEmpty());
+        StepVerifier.create(memoryService.create(request))
+                .assertNext(result -> {
+                    assertNotNull(result);
+                    assertEquals(memoryNode.id(), result.id());
+                    assertEquals(memoryNode.name(), result.name());
+                    assertEquals(memoryNode.description(), result.description());
+                    assertTrue(result.suggestions().isEmpty());
+                })
+                .verifyComplete();
 
         verify(toMemoryNode).apply(request);
         verify(repository).createMemory(memoryNode);
@@ -108,11 +112,13 @@ class MemoryServiceTest {
                 memoryNode.description(),
                 Collections.emptyList());
 
-        when(toMemoryNode.apply(request)).thenReturn(memoryNode);
+        when(toMemoryNode.apply(request)).thenReturn(Mono.just(memoryNode));
         when(repository.createMemory(memoryNode)).thenReturn(memoryNode);
         when(toMemoryResponse.apply(eq(memoryNode), any())).thenReturn(expectedResponse);
 
-        memoryService.create(request);
+        StepVerifier.create(memoryService.create(request))
+                .expectNextCount(1)
+                .verifyComplete();
 
         verify(repository).createMemory(memoryNode);
     }

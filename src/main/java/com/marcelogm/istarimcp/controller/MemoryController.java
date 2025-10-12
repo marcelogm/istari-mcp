@@ -8,6 +8,7 @@ import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Post;
 import jakarta.inject.Inject;
+import reactor.core.publisher.Mono;
 
 @Controller("/memories")
 public class MemoryController {
@@ -20,10 +21,11 @@ public class MemoryController {
     }
 
     @Post
-    public ContextResponse<CreateMemoryResponse> create(@Body CreateMemoryRequest request) {
-        return new ContextResponse<>(
-                "Memory created.",
-                memoryService.create(request)
-        );
+    public Mono<ContextResponse<CreateMemoryResponse>> create(@Body CreateMemoryRequest request) {
+        return memoryService.create(request)
+                .map(response -> new ContextResponse<>(
+                        "Memory created.",
+                        response
+                ));
     }
 }

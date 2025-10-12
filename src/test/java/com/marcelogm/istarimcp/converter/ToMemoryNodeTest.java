@@ -9,9 +9,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -41,32 +42,32 @@ class ToMemoryNodeTest {
         final var memoryEmbedding = List.of(10.0f, 11.0f, 12.0f);
 
         when(embeddingService.create("observation1"))
-                .thenReturn(CompletableFuture.completedFuture(embedding1));
+                .thenReturn(Mono.just(embedding1));
         when(embeddingService.create("observation2"))
-                .thenReturn(CompletableFuture.completedFuture(embedding2));
+                .thenReturn(Mono.just(embedding2));
         when(embeddingService.create("observation3"))
-                .thenReturn(CompletableFuture.completedFuture(embedding3));
+                .thenReturn(Mono.just(embedding3));
         when(embeddingService.create("Test Memory: Test Description"))
-                .thenReturn(CompletableFuture.completedFuture(memoryEmbedding));
+                .thenReturn(Mono.just(memoryEmbedding));
 
         // when
-        final var result = toMemoryNode.apply(request);
+        StepVerifier.create(toMemoryNode.apply(request))
+                .assertNext(result -> {
+                    assertNotNull(result);
+                    assertNotNull(result.id());
+                    assertEquals("Test Memory", result.name());
+                    assertEquals("Test Description", result.description());
+                    assertEquals(memoryEmbedding, result.embedding());
+                    assertEquals(3, result.observations().size());
 
-        // then
-        assertNotNull(result);
-        assertNotNull(result.id());
-        assertEquals("Test Memory", result.name());
-        assertEquals("Test Description", result.description());
-        assertEquals(memoryEmbedding, result.embedding());
-        assertEquals(3, result.observations().size());
-
-        // and: verify embeddings
-        assertEquals("observation1", result.observations().get(0).observation());
-        assertEquals(embedding1, result.observations().get(0).embedding());
-        assertEquals("observation2", result.observations().get(1).observation());
-        assertEquals(embedding2, result.observations().get(1).embedding());
-        assertEquals("observation3", result.observations().get(2).observation());
-        assertEquals(embedding3, result.observations().get(2).embedding());
+                    assertEquals("observation1", result.observations().get(0).observation());
+                    assertEquals(embedding1, result.observations().get(0).embedding());
+                    assertEquals("observation2", result.observations().get(1).observation());
+                    assertEquals(embedding2, result.observations().get(1).embedding());
+                    assertEquals("observation3", result.observations().get(2).observation());
+                    assertEquals(embedding3, result.observations().get(2).embedding());
+                })
+                .verifyComplete();
 
         verify(embeddingService, times(4)).create(anyString());
     }
@@ -82,18 +83,19 @@ class ToMemoryNodeTest {
         final var memoryEmbedding = List.of(10.0f, 11.0f, 12.0f);
 
         when(embeddingService.create("Test Memory: Test Description"))
-                .thenReturn(CompletableFuture.completedFuture(memoryEmbedding));
+                .thenReturn(Mono.just(memoryEmbedding));
 
         // when
-        final var result = toMemoryNode.apply(request);
-
-        // then
-        assertNotNull(result);
-        assertNotNull(result.id());
-        assertEquals("Test Memory", result.name());
-        assertEquals("Test Description", result.description());
-        assertEquals(memoryEmbedding, result.embedding());
-        assertEquals(0, result.observations().size());
+        StepVerifier.create(toMemoryNode.apply(request))
+                .assertNext(result -> {
+                    assertNotNull(result);
+                    assertNotNull(result.id());
+                    assertEquals("Test Memory", result.name());
+                    assertEquals("Test Description", result.description());
+                    assertEquals(memoryEmbedding, result.embedding());
+                    assertEquals(0, result.observations().size());
+                })
+                .verifyComplete();
 
         verify(embeddingService, times(1)).create(anyString());
     }

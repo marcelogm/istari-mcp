@@ -1,17 +1,27 @@
 package com.marcelogm.istarimcp.domain.service;
 
+import com.marcelogm.istarimcp.client.EmbeddingClient;
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
-import java.util.Collections;
+import reactor.core.publisher.Mono;
+
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Singleton
 public class EmbeddingService {
 
-    // TODO: call an embedding api
-    public CompletableFuture<List<Float>> create(String text) {
-        return CompletableFuture.completedFuture(Collections.emptyList());
+    @Inject
+    public final EmbeddingClient embeddingClient;
+
+    public EmbeddingService(EmbeddingClient embeddingClient) {
+        this.embeddingClient = embeddingClient;
+    }
+
+    public Mono<List<Float>> create(String text) {
+        final var request = new EmbeddingClient.EmbeddingRequest("qwen3-embedding:latest", text);
+        return embeddingClient.apply(request)
+                .map(EmbeddingClient.EmbeddingResponse::embedding);
     }
 
 }

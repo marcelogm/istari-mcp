@@ -6,18 +6,16 @@ import com.marcelogm.istarimcp.domain.model.ObservationNode;
 import com.marcelogm.istarimcp.domain.service.EmbeddingService;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
-import java.util.stream.IntStream;
 
 import static java.util.Optional.ofNullable;
 
 @Singleton
-public class ToMemoryNode implements Function<CreateMemoryRequest, MemoryNode> {
-
+public class ToMemoryNode {
     @Inject
     private final EmbeddingService embeddingService;
 
@@ -25,32 +23,24 @@ public class ToMemoryNode implements Function<CreateMemoryRequest, MemoryNode> {
         this.embeddingService = embeddingService;
     }
 
-    @Override
-    public MemoryNode apply(CreateMemoryRequest create) {
+    public Mono<MemoryNode> apply(CreateMemoryRequest create) {
         final var observationTexts = ofNullable(create.observations())
                 .orElse(Collections.emptyList());
-        final var memoryEmbeddingFuture = embeddingService.create(create.name() + ": " + create.description());
-        final var observationFutures = observationTexts
-                .stream()
-                .map(embeddingService::create)
-                .toList();
+        final var memoryEmbeddingMono = embeddingService.create(create.name() + ": " + create.description());
+        final var observationsMono = Flux.fromIterable(observationTexts)
+                .flatMap(text -> embeddingService.create(text)
+                        .map(embedding -> new ObservationNode(
+                                UUID.randomUUID(),
+                                text,
+                                embedding)))
+                .collectList();
 
-        CompletableFuture.allOf(
-                observationFutures.toArray(CompletableFuture[]::new)
-        ).join();
-
-        final var observations = IntStream.range(0, observationTexts.size())
-                .mapToObj(i -> new ObservationNode(
+        return Mono.zip(observationsMono, memoryEmbeddingMono)
+                .map(tuple -> new MemoryNode(
                         UUID.randomUUID(),
-                        observationTexts.get(i),
-                        observationFutures.get(i).join()))
-                .toList();
-
-        return new MemoryNode(
-                UUID.randomUUID(),
-                create.name(),
-                create.description(),
-                observations,
-                memoryEmbeddingFuture.join());
+                        create.name(),
+                        create.description(),
+                        tuple.getT1(),
+                        tuple.getT2()));
     }
 }

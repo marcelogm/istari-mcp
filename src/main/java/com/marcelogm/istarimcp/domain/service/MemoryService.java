@@ -6,6 +6,7 @@ import com.marcelogm.istarimcp.domain.converter.ToMemoryNode;
 import com.marcelogm.istarimcp.domain.converter.ToMemoryResponse;
 import com.marcelogm.istarimcp.domain.repository.MemoryRepository;
 import jakarta.inject.Singleton;
+import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 
@@ -23,15 +24,10 @@ public class MemoryService {
     }
 
 
-    public CreateMemoryResponse create(CreateMemoryRequest create) {
-        final var node = toMemoryNode.apply(create);
-        final var created = repository.createMemory(node);
-
-        // TODO: find correlations to that memory using embbeding
-        // TODO: rerank memories correlations
-        // TODO: return to LLM as suggestions
-
-        return toMemoryResponse.apply(created, Collections.emptyList());
+    public Mono<CreateMemoryResponse> create(CreateMemoryRequest create) {
+        return toMemoryNode.apply(create)
+                .map(repository::createMemory)
+                .map(created -> toMemoryResponse.apply(created, Collections.emptyList()));
     }
 
 }
