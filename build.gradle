@@ -1,0 +1,81 @@
+plugins {
+    id("io.micronaut.application") version "4.5.4"
+    id("com.gradleup.shadow") version "8.3.7"
+    id("com.diffplug.spotless") version "6.23.3"
+    id("io.micronaut.aot") version "4.5.4"
+}
+
+version = "0.1"
+group = "com.marcelogm"
+
+repositories {
+    mavenCentral()
+    maven { url "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+        mavenContent { snapshotsOnly() }
+    }
+    maven { url "https://central.sonatype.com/repository/maven-snapshots/"
+        mavenContent { snapshotsOnly() }
+    }
+}
+
+dependencies {
+    annotationProcessor("io.micronaut:micronaut-http-validation")
+    annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
+
+    implementation("io.micronaut.serde:micronaut-serde-jackson")
+    implementation("io.micronaut.neo4j:micronaut-neo4j-bolt")
+
+    compileOnly("io.micronaut:micronaut-http-client")
+    runtimeOnly("ch.qos.logback:logback-classic")
+
+	testCompileOnly("org.projectlombok:lombok:1.18.42")
+	testAnnotationProcessor("org.projectlombok:lombok:1.18.42")
+    testImplementation("io.micronaut:micronaut-http-client")
+    testImplementation("org.mockito:mockito-core")
+    testImplementation("org.mockito:mockito-junit-jupiter")
+    testImplementation("io.micronaut.testresources:micronaut-test-resources-client")
+    testImplementation("org.testcontainers:neo4j")
+    testImplementation("org.testcontainers:junit-jupiter")
+}
+
+
+application {
+    mainClass = "com.marcelogm.istarimcp.Application"
+}
+java {
+    sourceCompatibility = JavaVersion.toVersion("21")
+    targetCompatibility = JavaVersion.toVersion("21")
+}
+
+
+graalvmNative.toolchainDetection = false
+
+micronaut {
+    runtime("netty")
+    testRuntime("junit5")
+    processing {
+        incremental(true)
+        annotations("com.marcelogm.istarimcp.*")
+    }
+    aot {
+        optimizeServiceLoading = false
+        convertYamlToJava = false
+        precomputeOperations = true
+        cacheEnvironment = true
+        optimizeClassLoading = true
+        deduceEnvironment = true
+        optimizeNetty = true
+        replaceLogbackXml = true
+    }
+}
+
+
+tasks.named("dockerfileNative") {
+    jdkVersion = "21"
+}
+
+spotless {
+    java {
+        licenseHeaderFile(file("LICENSEHEADER"))
+    }
+}

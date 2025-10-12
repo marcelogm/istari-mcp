@@ -1,0 +1,84 @@
+# Compiled class files
+*.class
+
+# Log files
+*.log
+log/
+
+# Package Files
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+*.nupkg
+*.dll
+
+# IDEs and Build Tools
+.idea/
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/wrapper/maven-wrapper.jar
+!/.mvn/wrapper/maven-wrapper.properties
+
+# Gradle
+.gradle/
+build/
+.gradle-enterprise/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Specific to Micronaut
+.micronaut/
+**/META-INF/micronaut_generated/
+
+# GraalVM Native Image
+build/native/
+target/native-image/
+*.exe # Windows executable
+*.o   # Object files
+*.so  # Shared libraries (Linux)
+*.dylib # Dynamic libraries (macOS)
+*.graalvm.build.log # GraalVM build logs
+native-image.properties # Generated properties for native-image build
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Environment Variables / Sensitive Files
+.env
+.env.*
+*.env
+*.properties # Be careful with this one, if you have application.properties that you want to commit,
+             # you might need to be more specific, e.g., application-dev.properties
+             # but generally, sensitive properties files should be ignored.
+
+# Test reports and coverage
+/target/surefire-reports/
+/target/test-results/
+/target/jacoco/
+/build/reports/
+/build/jacoco/
+
+# Docker
+*.iml
+*.ipr
+*.iws
+.project
+.settings
+.metadata
