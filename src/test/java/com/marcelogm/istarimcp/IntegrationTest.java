@@ -19,7 +19,8 @@ public abstract class IntegrationTest implements TestPropertyProvider {
 
     @Container
     static final Neo4jContainer<?> neo4jContainer = new Neo4jContainer<>("neo4j:5")
-            .withoutAuthentication();
+            .withoutAuthentication()
+            .withEnv("NEO4J_PLUGINS", "[\"apoc\"]");
 
     @Inject
     protected Driver driver;

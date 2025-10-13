@@ -3,7 +3,6 @@ package com.marcelogm.istarimcp.domain.service;
 import com.marcelogm.istarimcp.client.EmbeddingClient;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -11,9 +10,9 @@ import java.util.List;
 @Singleton
 public class EmbeddingService {
 
-    @Inject
     public final EmbeddingClient embeddingClient;
 
+    @Inject
     public EmbeddingService(EmbeddingClient embeddingClient) {
         this.embeddingClient = embeddingClient;
     }

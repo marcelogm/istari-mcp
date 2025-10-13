@@ -1,15 +1,13 @@
 package com.marcelogm.istarimcp.api.memory;
 
+import com.marcelogm.istarimcp.domain.model.RelationshipType;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.serde.annotation.Serdeable;
 
-import java.util.List;
-
 @Serdeable
 @Introspected
-public record CreateMemoryRequest(
-        String name,
-        String description,
-        List<String> observations
+public record MemoryRelation(
+        RelationshipType type,
+        MemorySummaryResponse memory
 ) {
 }

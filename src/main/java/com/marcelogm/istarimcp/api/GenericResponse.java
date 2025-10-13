@@ -5,5 +5,7 @@ import io.micronaut.serde.annotation.Serdeable;
 
 @Serdeable
 @Introspected
-public record ContextResponse<T>(String context, T data) {
+public record GenericResponse(
+        String context
+) {
 }

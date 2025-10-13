@@ -94,4 +94,15 @@ public class MemoryDatabaseAssertions {
 
         assertEquals(memoryNode.observations().size(), relationshipCount);
     }
+
+    public static void assertMemoryNotInDatabase(Driver driver, UUID id) {
+        final var records = driver.executableQuery(
+                        "MATCH (m:Memory {id: $id}) RETURN m"
+                )
+                .withParameters(Map.of("id", id.toString()))
+                .execute()
+                .records();
+
+        assertTrue(records.isEmpty(), "Memory with id " + id + " should not exist in database");
+    }
 }

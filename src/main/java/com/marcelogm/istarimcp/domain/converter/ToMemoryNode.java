@@ -16,9 +16,10 @@ import static java.util.Optional.ofNullable;
 
 @Singleton
 public class ToMemoryNode {
-    @Inject
+
     private final EmbeddingService embeddingService;
 
+    @Inject
     public ToMemoryNode(EmbeddingService embeddingService) {
         this.embeddingService = embeddingService;
     }
