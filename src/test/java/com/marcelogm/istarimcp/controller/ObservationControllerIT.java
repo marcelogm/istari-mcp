@@ -6,24 +6,40 @@ import com.marcelogm.istarimcp.api.memory.CreateMemoryRequest;
 import com.marcelogm.istarimcp.api.memory.CreateMemoryResponse;
 import com.marcelogm.istarimcp.api.observation.CreateObservationRequest;
 import com.marcelogm.istarimcp.api.observation.CreateObservationResponse;
+import com.marcelogm.istarimcp.client.EmbeddingClient;
 import io.micronaut.core.type.Argument;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.client.annotation.Client;
 import jakarta.inject.Inject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 class ObservationControllerIT extends IntegrationTest {
 
     @Inject
     @Client("/")
     private HttpClient httpClient;
+
+    @Inject
+    private EmbeddingClient embeddingClient;
+
+    @BeforeEach
+    public void setup() {
+        when(embeddingClient.apply(any())).thenReturn(Mono.just(
+                new EmbeddingClient.EmbeddingResponse(List.of(0.0f, 1.0f, 0.0f))
+        ));
+    }
 
     @Test
     @DisplayName("should add observation to existing memory")

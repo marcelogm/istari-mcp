@@ -1,5 +1,7 @@
 package com.marcelogm.istarimcp;
 
+import com.marcelogm.istarimcp.client.EmbeddingClient;
+import io.micronaut.test.annotation.MockBean;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.micronaut.test.support.TestPropertyProvider;
 import jakarta.inject.Inject;
@@ -11,6 +13,8 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Map;
+
+import static org.mockito.Mockito.mock;
 
 @MicronautTest
 @Testcontainers
@@ -24,6 +28,11 @@ public abstract class IntegrationTest implements TestPropertyProvider {
 
     @Inject
     protected Driver driver;
+
+    @MockBean(EmbeddingClient.class)
+    EmbeddingClient embeddingClient() {
+        return mock(EmbeddingClient.class);
+    }
 
     @Override
     public Map<String, String> getProperties() {

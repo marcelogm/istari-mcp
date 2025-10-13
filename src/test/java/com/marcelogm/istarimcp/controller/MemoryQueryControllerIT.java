@@ -5,6 +5,7 @@ import com.marcelogm.istarimcp.api.ContextResponse;
 import com.marcelogm.istarimcp.api.memory.CreateMemoryRequest;
 import com.marcelogm.istarimcp.api.memory.CreateMemoryResponse;
 import com.marcelogm.istarimcp.api.memory.MemoryResponse;
+import com.marcelogm.istarimcp.client.EmbeddingClient;
 import io.micronaut.core.type.Argument;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.client.HttpClient;
@@ -12,10 +13,13 @@ import io.micronaut.http.client.annotation.Client;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 class MemoryQueryControllerIT extends IntegrationTest {
 
@@ -23,9 +27,15 @@ class MemoryQueryControllerIT extends IntegrationTest {
     @Client("/")
     private HttpClient httpClient;
 
+    @Inject
+    private EmbeddingClient embeddingClient;
+
     @Test
     @DisplayName("should retrieve memory by name")
     void shouldRetrieveMemoryByName() {
+        when(embeddingClient.apply(any())).thenReturn(Mono.just(
+                new EmbeddingClient.EmbeddingResponse(List.of(0.0f, 1.0f, 0.0f))
+        ));
         final var createRequest = new CreateMemoryRequest(
                 "Findable Memory",
                 "Memory to find",
@@ -74,6 +84,9 @@ class MemoryQueryControllerIT extends IntegrationTest {
     @Test
     @DisplayName("should search memories by similarity")
     void shouldSearchMemoriesBySimilarity() {
+        when(embeddingClient.apply(any())).thenReturn(Mono.just(
+                new EmbeddingClient.EmbeddingResponse(List.of(0.0f, 1.0f, 0.0f))
+        ));
         final var request1 = new CreateMemoryRequest(
                 "Java Programming",
                 "Java is an object-oriented language",

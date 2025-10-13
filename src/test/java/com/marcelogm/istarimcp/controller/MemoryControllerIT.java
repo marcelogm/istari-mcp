@@ -6,6 +6,7 @@ import com.marcelogm.istarimcp.api.memory.CreateMemoryRequest;
 import com.marcelogm.istarimcp.api.memory.CreateMemoryResponse;
 import com.marcelogm.istarimcp.api.memory.UpdateMemoryRequest;
 import com.marcelogm.istarimcp.api.memory.UpdateMemoryResponse;
+import com.marcelogm.istarimcp.client.EmbeddingClient;
 import io.micronaut.core.type.Argument;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.client.HttpClient;
@@ -13,12 +14,15 @@ import io.micronaut.http.client.annotation.Client;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 import java.util.List;
 
 import static com.marcelogm.istarimcp.helper.MemoryDatabaseAssertions.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 class MemoryControllerIT extends IntegrationTest {
 
@@ -26,10 +30,16 @@ class MemoryControllerIT extends IntegrationTest {
     @Client("/")
     private HttpClient httpClient;
 
+    @Inject
+    private EmbeddingClient embeddingClient;
+
     @Test
     @DisplayName("should create memory with observations")
     void shouldCreateMemoryWithObservations() {
         // given
+        when(embeddingClient.apply(any())).thenReturn(Mono.just(
+                new EmbeddingClient.EmbeddingResponse(List.of(0.0f, 1.0f, 0.0f))
+        ));
         final var request = new CreateMemoryRequest(
                 "Test Memory",
                 "Test Description",
@@ -61,6 +71,9 @@ class MemoryControllerIT extends IntegrationTest {
     @DisplayName("should create memory without observations")
     void shouldCreateMemoryWithoutObservations() {
         // given
+        when(embeddingClient.apply(any())).thenReturn(Mono.just(
+                new EmbeddingClient.EmbeddingResponse(List.of(0.0f, 1.0f, 0.0f))
+        ));
         final var request = new CreateMemoryRequest(
                 "Empty Memory",
                 "Memory without observations",
@@ -92,6 +105,9 @@ class MemoryControllerIT extends IntegrationTest {
     @DisplayName("should delete memory by name")
     void shouldDeleteMemoryByName() {
         // given
+        when(embeddingClient.apply(any())).thenReturn(Mono.just(
+                new EmbeddingClient.EmbeddingResponse(List.of(0.0f, 1.0f, 0.0f))
+        ));
         final var createRequest = new CreateMemoryRequest(
                 "Memory To Delete",
                 "This memory will be deleted",
@@ -145,6 +161,9 @@ class MemoryControllerIT extends IntegrationTest {
     @DisplayName("should update memory description")
     void shouldUpdateMemoryDescription() {
         // given
+        when(embeddingClient.apply(any())).thenReturn(Mono.just(
+                new EmbeddingClient.EmbeddingResponse(List.of(0.0f, 1.0f, 0.0f))
+        ));
         final var createRequest = new CreateMemoryRequest(
                 "Update Test Memory",
                 "Original Description",
