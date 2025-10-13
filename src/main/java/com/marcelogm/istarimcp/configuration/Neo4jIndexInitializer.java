@@ -1,7 +1,8 @@
-package com.marcelogm.istarimcp.infrastructure.configuration;
+package com.marcelogm.istarimcp.configuration;
 
 import io.micronaut.context.annotation.Context;
 import io.micronaut.context.annotation.Property;
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.event.ApplicationEventListener;
 import io.micronaut.runtime.server.event.ServerStartupEvent;
 import jakarta.inject.Inject;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
  * This ensures that all necessary indexes are created before the application begins processing requests.
  */
 @Context
+@Requires(notEnv = "test")
 public class Neo4jIndexInitializer implements ApplicationEventListener<ServerStartupEvent> {
 
     private static final Logger log = LoggerFactory.getLogger(Neo4jIndexInitializer.class);
@@ -40,7 +42,6 @@ public class Neo4jIndexInitializer implements ApplicationEventListener<ServerSta
 
     private void createConstraints() {
         try (var session = driver.session()) {
-            // Memory unique constraints
             session.executeWrite(tx -> {
                 tx.run("CREATE CONSTRAINT memory_id_unique IF NOT EXISTS FOR (m:Memory) REQUIRE m.id IS UNIQUE");
                 return null;
@@ -53,7 +54,6 @@ public class Neo4jIndexInitializer implements ApplicationEventListener<ServerSta
             });
             log.debug("Created constraint: memory_name_unique");
 
-            // Observation unique constraint
             session.executeWrite(tx -> {
                 tx.run("CREATE CONSTRAINT observation_id_unique IF NOT EXISTS FOR (o:Observation) REQUIRE o.id IS UNIQUE");
                 return null;
@@ -68,7 +68,6 @@ public class Neo4jIndexInitializer implements ApplicationEventListener<ServerSta
 
     private void createVectorIndexes() {
         try (var session = driver.session()) {
-            // Memory embedding vector index
             session.executeWrite(tx -> {
                 var query = String.format("""
                         CREATE VECTOR INDEX memory_embedding_index IF NOT EXISTS
@@ -85,7 +84,6 @@ public class Neo4jIndexInitializer implements ApplicationEventListener<ServerSta
             });
             log.debug("Created vector index: memory_embedding_index (dimensions: {})", vectorDimensions);
 
-            // Observation embedding vector index
             session.executeWrite(tx -> {
                 var query = String.format("""
                         CREATE VECTOR INDEX observation_embedding_index IF NOT EXISTS
