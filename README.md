@@ -73,10 +73,10 @@ The MCP server provides an interface between AI assistants and the Istari backen
 
 ### Installation
 
-1. Make the server executable:
+1. Install Node.js and required dependencies:
 
 ```bash
-chmod +x mcp-server.js
+npm install
 ```
 
 2. Configure your MCP client. For Continue.dev, edit `~/.continue/config.yaml`:
@@ -84,13 +84,14 @@ chmod +x mcp-server.js
 ```yaml
 mcpServers:
   - name: istari-mcp
+    command: node
     args:
       - /absolute/path/to/istari-mcp/mcp-server.js
     env:
       ISTARI_API_URL: http://localhost:8080
 ```
 
-3. Restart your MCP client to load the server.
+3. Reload your MCP client to load the server.
 
 ### Available MCP Tools
 
