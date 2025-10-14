@@ -9,6 +9,7 @@ import org.neo4j.driver.Driver;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.Value;
 import org.neo4j.driver.Values;
+import reactor.core.publisher.Flux;
 
 import java.util.*;
 
@@ -72,6 +73,32 @@ public class MemoryRepository {
         } catch (Exception e) {
             return Collections.emptyList();
         }
+    }
+
+    public Flux<MemoryNode> streamAll() {
+        return Flux.create(sink -> {
+            try (Session session = driver.session()) {
+                session.executeRead(tx -> {
+                    var query = """
+                                MATCH (m:Memory)
+                            OPTIONAL MATCH (m)-[:HAS_OBSERVATION]->(o:Observation)
+                            WITH m, collect(o) AS observations
+                            RETURN m, observations
+                            """;
+
+                    var result = tx.run(query);
+                    while (result.hasNext() && !sink.isCancelled()) {
+                        var record = result.next();
+                        var memory = mapToMemoryWithObservations(record);
+                        sink.next(memory);
+                    }
+                    sink.complete();
+                    return null;
+                });
+            } catch (Exception e) {
+                sink.error(e);
+            }
+        });
     }
 
     public Optional<MemoryNode> findByName(String name) {

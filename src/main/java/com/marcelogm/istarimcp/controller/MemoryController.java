@@ -7,6 +7,7 @@ import com.marcelogm.istarimcp.api.memory.CreateMemoryResponse;
 import com.marcelogm.istarimcp.api.memory.UpdateMemoryRequest;
 import com.marcelogm.istarimcp.api.memory.UpdateMemoryResponse;
 import com.marcelogm.istarimcp.domain.service.MemoryService;
+import com.marcelogm.istarimcp.domain.service.MemoryReprocessService;
 import io.micronaut.http.annotation.*;
 import jakarta.inject.Inject;
 import reactor.core.publisher.Mono;
@@ -15,10 +16,12 @@ import reactor.core.publisher.Mono;
 public class MemoryController {
 
     private final MemoryService memoryService;
+    private final MemoryReprocessService reprocessService;
 
     @Inject
-    public MemoryController(MemoryService memoryService) {
+    public MemoryController(MemoryService memoryService, MemoryReprocessService reprocessService) {
         this.memoryService = memoryService;
+        this.reprocessService = reprocessService;
     }
 
     @Post
@@ -44,6 +47,23 @@ public class MemoryController {
                 .map(response -> new ContextResponse<>(
                         "Memory updated.",
                         response
+                ));
+    }
+
+    @Post("/reprocess")
+    public Mono<GenericResponse> reprocess() {
+        return reprocessService.startReprocessing()
+                .map(started -> started
+                        ? new GenericResponse("Reprocessing started in background.")
+                        : new GenericResponse("Reprocessing already in progress."));
+    }
+
+    @Get("/reprocess/status")
+    public Mono<ContextResponse<MemoryReprocessService.ReprocessStatus>> reprocessStatus() {
+        return Mono.just(reprocessService.getStatus())
+                .map(status -> new ContextResponse<>(
+                        "Reprocessing status.",
+                        status
                 ));
     }
 }

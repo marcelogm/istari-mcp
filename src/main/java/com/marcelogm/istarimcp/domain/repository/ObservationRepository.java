@@ -7,7 +7,9 @@ import org.neo4j.driver.Driver;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.Values;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Singleton
 public class ObservationRepository {
@@ -17,6 +19,26 @@ public class ObservationRepository {
     @Inject
     public ObservationRepository(Driver driver) {
         this.driver = driver;
+    }
+
+    public boolean updateObservationEmbedding(UUID observationId, List<Float> embedding) {
+        try (Session session = driver.session()) {
+            return session.executeWrite(tx -> {
+                var query = """
+                        MATCH (o:Observation {id: $id})
+                        SET o.embedding = $embedding
+                        RETURN count(o) > 0 AS updated
+                        """;
+                var parameters = Values.parameters(
+                        "id", observationId.toString(),
+                        "embedding", embedding
+                );
+                var result = tx.run(query, parameters).single();
+                return result.get("updated").asBoolean();
+            });
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public Optional<ObservationNode> addObservationToMemory(String memoryName, ObservationNode observation) {
