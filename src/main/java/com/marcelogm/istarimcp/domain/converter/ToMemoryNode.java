@@ -27,7 +27,10 @@ public class ToMemoryNode {
     public Mono<MemoryNode> apply(CreateMemoryRequest create) {
         final var observationTexts = ofNullable(create.observations())
                 .orElse(Collections.emptyList());
-        final var memoryEmbeddingMono = embeddingService.create(create.name() + ": " + create.description());
+
+        final var mainText = create.name() + ": " + create.description();
+        final var memoryEmbeddingMono = embeddingService.createFromParts(mainText, observationTexts);
+
         final var observationsMono = Flux.fromIterable(observationTexts)
                 .flatMap(text -> embeddingService.create(text)
                         .map(embedding -> new ObservationNode(

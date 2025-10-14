@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,10 +33,11 @@ class ToMemoryNodeTest {
     @DisplayName("should convert memory request to memory node with observations")
     void shouldConvertCreateMemoryRequestToMemoryNode() {
         // given
+        final var observations = List.of("observation1", "observation2", "observation3");
         final var request = new CreateMemoryRequest(
                 "Test Memory",
                 "Test Description",
-                List.of("observation1", "observation2", "observation3"));
+                observations);
         final var embedding1 = List.of(1.0f, 2.0f, 3.0f);
         final var embedding2 = List.of(4.0f, 5.0f, 6.0f);
         final var embedding3 = List.of(7.0f, 8.0f, 9.0f);
@@ -47,7 +49,7 @@ class ToMemoryNodeTest {
                 .thenReturn(Mono.just(embedding2));
         when(embeddingService.create("observation3"))
                 .thenReturn(Mono.just(embedding3));
-        when(embeddingService.create("Test Memory: Test Description"))
+        when(embeddingService.createFromParts("Test Memory: Test Description", observations))
                 .thenReturn(Mono.just(memoryEmbedding));
 
         // when
@@ -69,7 +71,8 @@ class ToMemoryNodeTest {
                 })
                 .verifyComplete();
 
-        verify(embeddingService, times(4)).create(anyString());
+        verify(embeddingService, times(3)).create(anyString());
+        verify(embeddingService, times(1)).createFromParts(anyString(), any());
     }
 
     @Test
@@ -82,7 +85,7 @@ class ToMemoryNodeTest {
                 List.of());
         final var memoryEmbedding = List.of(10.0f, 11.0f, 12.0f);
 
-        when(embeddingService.create("Test Memory: Test Description"))
+        when(embeddingService.createFromParts("Test Memory: Test Description", Collections.emptyList()))
                 .thenReturn(Mono.just(memoryEmbedding));
 
         // when
@@ -97,6 +100,6 @@ class ToMemoryNodeTest {
                 })
                 .verifyComplete();
 
-        verify(embeddingService, times(1)).create(anyString());
+        verify(embeddingService, times(1)).createFromParts(anyString(), any());
     }
 }
