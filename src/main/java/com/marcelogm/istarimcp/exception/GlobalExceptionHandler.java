@@ -10,14 +10,15 @@ import jakarta.inject.Singleton;
 
 @Produces
 @Singleton
-@Requires(classes = {IllegalArgumentException.class, ExceptionHandler.class})
-public class GlobalExceptionHandler implements ExceptionHandler<IllegalArgumentException, HttpResponse<GenericResponse>> {
+@Requires(classes = { IllegalArgumentException.class, ExceptionHandler.class })
+public class GlobalExceptionHandler
+        implements ExceptionHandler<IllegalArgumentException, HttpResponse<GenericResponse>> {
 
     @Override
+    @SuppressWarnings("rawtypes")
     public HttpResponse<GenericResponse> handle(HttpRequest request, IllegalArgumentException exception) {
         final var errorResponse = new GenericResponse(
-                exception.getMessage()
-        );
+                exception.getMessage());
         return HttpResponse.badRequest(errorResponse);
     }
 }

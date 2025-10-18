@@ -34,26 +34,20 @@ class MemoryQueryControllerIT extends IntegrationTest {
     @DisplayName("should retrieve memory by name")
     void shouldRetrieveMemoryByName() {
         when(embeddingClient.apply(any())).thenReturn(Mono.just(
-                new EmbeddingClient.EmbeddingResponse(List.of(0.0f, 1.0f, 0.0f))
-        ));
+                new EmbeddingClient.EmbeddingResponse(List.of(0.0f, 1.0f, 0.0f))));
         final var createRequest = new CreateMemoryRequest(
                 "Findable Memory",
                 "Memory to find",
-                List.of("observation1")
-        );
+                List.of("observation1"));
 
         httpClient.toBlocking().retrieve(
                 HttpRequest.POST("/memories", createRequest),
-                Argument.of(ContextResponse.class, CreateMemoryResponse.class)
-        );
+                Argument.of(ContextResponse.class, CreateMemoryResponse.class));
 
-        final var getRequest = HttpRequest.GET("/memories").uri(uri ->
-                uri.queryParam("name", "Findable Memory")
-        );
+        final var getRequest = HttpRequest.GET("/memories").uri(uri -> uri.queryParam("name", "Findable Memory"));
         final var response = httpClient.toBlocking().retrieve(
                 getRequest,
-                Argument.of(ContextResponse.class, MemoryResponse.class)
-        );
+                Argument.of(ContextResponse.class, MemoryResponse.class));
 
         assertNotNull(response);
         assertEquals("Memory retrieved by name.", response.context());
@@ -68,13 +62,10 @@ class MemoryQueryControllerIT extends IntegrationTest {
     @Test
     @DisplayName("should return empty response when memory not found by name")
     void shouldReturnEmptyResponseWhenMemoryNotFoundByName() {
-        final var getRequest = HttpRequest.GET("/memories").uri(uri ->
-                uri.queryParam("name", "Non Existent")
-        );
+        final var getRequest = HttpRequest.GET("/memories").uri(uri -> uri.queryParam("name", "Non Existent"));
         final var response = httpClient.toBlocking().retrieve(
                 getRequest,
-                Argument.of(ContextResponse.class, MemoryResponse.class)
-        );
+                Argument.of(ContextResponse.class, MemoryResponse.class));
 
         assertNotNull(response);
         assertEquals("No memory retrieved by name.", response.context());
@@ -83,39 +74,33 @@ class MemoryQueryControllerIT extends IntegrationTest {
 
     @Test
     @DisplayName("should search memories by similarity")
+    @SuppressWarnings("unchecked")
     void shouldSearchMemoriesBySimilarity() {
         when(embeddingClient.apply(any())).thenReturn(Mono.just(
-                new EmbeddingClient.EmbeddingResponse(List.of(0.0f, 1.0f, 0.0f))
-        ));
+                new EmbeddingClient.EmbeddingResponse(List.of(0.0f, 1.0f, 0.0f))));
         final var request1 = new CreateMemoryRequest(
                 "Java Programming",
                 "Java is an object-oriented language",
-                List.of("observation1")
-        );
+                List.of("observation1"));
 
         final var request2 = new CreateMemoryRequest(
                 "Python Programming",
                 "Python is a high-level language",
-                List.of("observation2")
-        );
+                List.of("observation2"));
 
         httpClient.toBlocking().retrieve(
                 HttpRequest.POST("/memories", request1),
-                Argument.of(ContextResponse.class, CreateMemoryResponse.class)
-        );
+                Argument.of(ContextResponse.class, CreateMemoryResponse.class));
 
         httpClient.toBlocking().retrieve(
                 HttpRequest.POST("/memories", request2),
-                Argument.of(ContextResponse.class, CreateMemoryResponse.class)
-        );
+                Argument.of(ContextResponse.class, CreateMemoryResponse.class));
 
-        final var searchRequest = HttpRequest.GET("/memories/search").uri(uri ->
-                uri.queryParam("context", "programming language")
-        );
+        final var searchRequest = HttpRequest.GET("/memories/search")
+                .uri(uri -> uri.queryParam("context", "programming language"));
         final var response = httpClient.toBlocking().retrieve(
                 searchRequest,
-                Argument.of(ContextResponse.class, Argument.listOf(MemoryResponse.class))
-        );
+                Argument.of(ContextResponse.class, Argument.listOf(MemoryResponse.class)));
 
         assertNotNull(response);
         assertEquals("Memories retrieved by similarity.", response.context());

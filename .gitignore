@@ -67,6 +67,7 @@ Desktop.ini
 *.properties # Be careful with this one, if you have application.properties that you want to commit,
              # you might need to be more specific, e.g., application-dev.properties
              # but generally, sensitive properties files should be ignored.
+bin
 
 # Test reports and coverage
 /target/surefire-reports/

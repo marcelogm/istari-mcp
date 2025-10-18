@@ -1,4 +1,4 @@
-package com.marcelogm.istarimcp.service;
+package com.marcelogm.istarimcp.domain.service;
 
 import com.marcelogm.istarimcp.api.memory.CreateMemoryRequest;
 import com.marcelogm.istarimcp.api.memory.CreateMemoryResponse;
@@ -9,9 +9,6 @@ import com.marcelogm.istarimcp.domain.converter.ToMemoryNode;
 import com.marcelogm.istarimcp.domain.model.MemoryNode;
 import com.marcelogm.istarimcp.domain.model.ObservationNode;
 import com.marcelogm.istarimcp.domain.repository.MemoryRepository;
-import com.marcelogm.istarimcp.domain.service.EmbeddingService;
-import com.marcelogm.istarimcp.domain.service.MemoryQueryService;
-import com.marcelogm.istarimcp.domain.service.MemoryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -79,8 +76,7 @@ class MemoryServiceTest {
                 List.of(10.0f, 11.0f, 12.0f));
 
         final var suggestions = List.of(
-                new MemorySummaryResponse(UUID.randomUUID(), "Similar Memory", "", Optional.of(0.9f))
-        );
+                new MemorySummaryResponse(UUID.randomUUID(), "Similar Memory", "", Optional.of(0.9f)));
 
         final var expectedResponse = new CreateMemoryResponse(
                 memoryNode.id(),
@@ -196,8 +192,7 @@ class MemoryServiceTest {
                 "Test Memory",
                 "Updated Description",
                 Collections.emptyList(),
-                embedding
-        );
+                embedding);
 
         when(embeddingService.create("Test Memory: Updated Description")).thenReturn(Mono.just(embedding));
         when(repository.updateMemory("Test Memory", "Updated Description", embedding))
@@ -231,10 +226,8 @@ class MemoryServiceTest {
 
         // expect
         StepVerifier.create(memoryService.updateMemory(request))
-                .expectErrorMatches(throwable ->
-                        throwable instanceof IllegalArgumentException &&
-                                throwable.getMessage().contains("Memory not found: Non Existent")
-                )
+                .expectErrorMatches(throwable -> throwable instanceof IllegalArgumentException &&
+                        throwable.getMessage().contains("Memory not found: Non Existent"))
                 .verify();
 
         // then

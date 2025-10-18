@@ -1,6 +1,5 @@
-package com.marcelogm.istarimcp.converter;
+package com.marcelogm.istarimcp.domain.converter;
 
-import com.marcelogm.istarimcp.domain.converter.ToMemorySummaryResponse;
 import com.marcelogm.istarimcp.domain.model.MemoryNode;
 import com.marcelogm.istarimcp.domain.model.ObservationNode;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,8 +31,7 @@ class ToMemorySummaryResponseTest {
                 "Test Memory",
                 "Test Description",
                 List.of(new ObservationNode(randomUUID(), "observation", List.of(1.0f))),
-                List.of(2.0f, 3.0f)
-        );
+                List.of(2.0f, 3.0f));
 
         // when
         final var result = toMemorySummaryResponse.apply(memoryNode, 0.95f);
@@ -57,8 +55,7 @@ class ToMemorySummaryResponseTest {
                 "Test Memory",
                 "Test Description",
                 Collections.emptyList(),
-                List.of(1.0f, 2.0f)
-        );
+                List.of(1.0f, 2.0f));
 
         // when
         final var result = toMemorySummaryResponse.apply(memoryNode, null);
@@ -80,8 +77,7 @@ class ToMemorySummaryResponseTest {
                 "Very Similar Memory",
                 "Almost identical",
                 Collections.emptyList(),
-                List.of(1.0f)
-        );
+                List.of(1.0f));
 
         // when
         final var result = toMemorySummaryResponse.apply(memoryNode, 0.99f);

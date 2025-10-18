@@ -1,7 +1,6 @@
-package com.marcelogm.istarimcp.converter;
+package com.marcelogm.istarimcp.domain.converter;
 
 import com.marcelogm.istarimcp.api.memory.MemorySummaryResponse;
-import com.marcelogm.istarimcp.domain.converter.ToCreateMemoryResponse;
 import com.marcelogm.istarimcp.domain.model.MemoryNode;
 import com.marcelogm.istarimcp.domain.model.ObservationNode;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,21 +31,18 @@ class ToCreateMemoryResponseTest {
         final var observation = new ObservationNode(
                 randomUUID(),
                 "test observation",
-                List.of(1.0f, 2.0f, 3.0f)
-        );
+                List.of(1.0f, 2.0f, 3.0f));
 
         final var memoryNode = new MemoryNode(
                 memoryId,
                 "Test Memory",
                 "Test Description",
                 List.of(observation),
-                List.of(4.0f, 5.0f, 6.0f)
-        );
+                List.of(4.0f, 5.0f, 6.0f));
 
         final var suggestions = List.of(
                 new MemorySummaryResponse(randomUUID(), "Similar Memory 1", "Description 1", of(0.95f)),
-                new MemorySummaryResponse(randomUUID(), "Similar Memory 2", "Description 2", of(0.85f))
-        );
+                new MemorySummaryResponse(randomUUID(), "Similar Memory 2", "Description 2", of(0.85f)));
 
         // when
         final var result = toCreateMemoryResponse.apply(memoryNode, suggestions);
@@ -75,8 +71,7 @@ class ToCreateMemoryResponseTest {
                 "Empty Memory",
                 "Memory without suggestions",
                 Collections.emptyList(),
-                List.of(1.0f, 2.0f, 3.0f)
-        );
+                List.of(1.0f, 2.0f, 3.0f));
 
         // when
         final var result = toCreateMemoryResponse.apply(memoryNode, Collections.emptyList());
@@ -98,14 +93,12 @@ class ToCreateMemoryResponseTest {
                 "Test Memory",
                 "Test Description",
                 Collections.emptyList(),
-                List.of(1.0f)
-        );
+                List.of(1.0f));
 
         final var suggestions = List.of(
                 new MemorySummaryResponse(randomUUID(), "First", "", of(0.9f)),
                 new MemorySummaryResponse(randomUUID(), "Second", "", of(0.8f)),
-                new MemorySummaryResponse(randomUUID(), "Third", "", of(0.7f))
-        );
+                new MemorySummaryResponse(randomUUID(), "Third", "", of(0.7f)));
 
         // when
         final var result = toCreateMemoryResponse.apply(memoryNode, suggestions);

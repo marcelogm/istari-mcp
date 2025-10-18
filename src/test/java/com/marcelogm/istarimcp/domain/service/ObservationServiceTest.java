@@ -1,11 +1,9 @@
-package com.marcelogm.istarimcp.service;
+package com.marcelogm.istarimcp.domain.service;
 
 import com.marcelogm.istarimcp.api.observation.CreateObservationRequest;
 import com.marcelogm.istarimcp.domain.model.ObservationNode;
 import com.marcelogm.istarimcp.domain.repository.MemoryRepository;
 import com.marcelogm.istarimcp.domain.repository.ObservationRepository;
-import com.marcelogm.istarimcp.domain.service.EmbeddingService;
-import com.marcelogm.istarimcp.domain.service.ObservationService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -90,10 +88,8 @@ class ObservationServiceTest {
 
         // when
         StepVerifier.create(observationService.addObservation(request))
-                .expectErrorMatches(throwable ->
-                        throwable instanceof IllegalArgumentException &&
-                                throwable.getMessage().contains("Memory not found: Non Existent Memory")
-                )
+                .expectErrorMatches(throwable -> throwable instanceof IllegalArgumentException &&
+                        throwable.getMessage().contains("Memory not found: Non Existent Memory"))
                 .verify();
 
         // then
@@ -119,10 +115,8 @@ class ObservationServiceTest {
 
         // when
         StepVerifier.create(observationService.addObservation(request))
-                .expectErrorMatches(throwable ->
-                        throwable instanceof IllegalArgumentException &&
-                                throwable.getMessage().contains("Failed to add observation")
-                )
+                .expectErrorMatches(throwable -> throwable instanceof IllegalArgumentException &&
+                        throwable.getMessage().contains("Failed to add observation"))
                 .verify();
 
         // then

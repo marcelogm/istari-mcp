@@ -1,7 +1,6 @@
-package com.marcelogm.istarimcp.service;
+package com.marcelogm.istarimcp.domain.service;
 
 import com.marcelogm.istarimcp.client.EmbeddingClient;
-import com.marcelogm.istarimcp.domain.service.EmbeddingService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -27,8 +27,7 @@ class RelationshipControllerIT extends IntegrationTest {
         final var httpRequest = HttpRequest.GET("/relationships");
         final var response = httpClient.toBlocking().retrieve(
                 httpRequest,
-                Argument.of(ContextResponse.class, Argument.listOf(String.class))
-        );
+                Argument.of(ContextResponse.class, Argument.listOf(String.class)));
 
         assertNotNull(response);
         assertNotNull(response.context());
@@ -36,13 +35,13 @@ class RelationshipControllerIT extends IntegrationTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     @DisplayName("should return expected number of relationship types")
     void shouldReturnExpectedNumberOfRelationships() {
         final var httpRequest = HttpRequest.GET("/relationships");
         final var response = httpClient.toBlocking().retrieve(
                 httpRequest,
-                Argument.of(ContextResponse.class, Argument.listOf(String.class))
-        );
+                Argument.of(ContextResponse.class, Argument.listOf(String.class)));
 
         assertNotNull(response);
         final var relationships = (List<String>) response.data();

@@ -1,8 +1,7 @@
-package com.marcelogm.istarimcp.converter;
+package com.marcelogm.istarimcp.domain.converter;
 
 import com.marcelogm.istarimcp.api.memory.MemoryRelation;
 import com.marcelogm.istarimcp.api.memory.MemorySummaryResponse;
-import com.marcelogm.istarimcp.domain.converter.ToMemoryResponse;
 import com.marcelogm.istarimcp.domain.model.MemoryNode;
 import com.marcelogm.istarimcp.domain.model.ObservationNode;
 import com.marcelogm.istarimcp.domain.model.RelationshipType;
@@ -34,28 +33,23 @@ class ToMemoryResponseTest {
         final var observation1 = new ObservationNode(
                 randomUUID(),
                 "first observation",
-                List.of(1.0f, 2.0f, 3.0f)
-        );
+                List.of(1.0f, 2.0f, 3.0f));
         final var observation2 = new ObservationNode(
                 randomUUID(),
                 "second observation",
-                List.of(4.0f, 5.0f, 6.0f)
-        );
+                List.of(4.0f, 5.0f, 6.0f));
 
         final var memoryNode = new MemoryNode(
                 memoryId,
                 "Test Memory",
                 "Test Description",
                 List.of(observation1, observation2),
-                List.of(7.0f, 8.0f, 9.0f)
-        );
+                List.of(7.0f, 8.0f, 9.0f));
 
         final var relations = List.of(
                 new MemoryRelation(
                         RelationshipType.RELATED_TO,
-                        new MemorySummaryResponse(randomUUID(), "Related Memory", "Description", of(0.9f))
-                )
-        );
+                        new MemorySummaryResponse(randomUUID(), "Related Memory", "Description", of(0.9f))));
 
         // when
         final var result = toMemoryResponse.apply(memoryNode, relations, 0.95f);
@@ -84,8 +78,7 @@ class ToMemoryResponseTest {
                 "Empty Memory",
                 "Memory without observations",
                 Collections.emptyList(),
-                List.of(1.0f, 2.0f, 3.0f)
-        );
+                List.of(1.0f, 2.0f, 3.0f));
 
         // when
         final var result = toMemoryResponse.apply(memoryNode, Collections.emptyList(), null);
@@ -109,8 +102,7 @@ class ToMemoryResponseTest {
                 "Isolated Memory",
                 "Memory without relations",
                 List.of(new ObservationNode(randomUUID(), "observation", List.of(1.0f))),
-                List.of(2.0f, 3.0f)
-        );
+                List.of(2.0f, 3.0f));
 
         // when
         final var result = toMemoryResponse.apply(memoryNode, Collections.emptyList(), 0.8f);
@@ -132,8 +124,7 @@ class ToMemoryResponseTest {
                 "Test Memory",
                 "Test Description",
                 List.of(new ObservationNode(randomUUID(), "observation", List.of(1.0f))),
-                List.of(2.0f)
-        );
+                List.of(2.0f));
 
         // when
         final var result = toMemoryResponse.apply(memoryNode, Collections.emptyList(), null);
@@ -155,10 +146,8 @@ class ToMemoryResponseTest {
                 List.of(
                         new ObservationNode(randomUUID(), "obs1", List.of(1.0f)),
                         new ObservationNode(randomUUID(), "obs2", List.of(2.0f)),
-                        new ObservationNode(randomUUID(), "obs3", List.of(3.0f))
-                ),
-                List.of(4.0f)
-        );
+                        new ObservationNode(randomUUID(), "obs3", List.of(3.0f))),
+                List.of(4.0f));
 
         // when
         final var result = toMemoryResponse.apply(memoryNode, Collections.emptyList(), null);
@@ -180,23 +169,18 @@ class ToMemoryResponseTest {
                 "Test Memory",
                 "Test Description",
                 Collections.emptyList(),
-                List.of(1.0f)
-        );
+                List.of(1.0f));
 
         final var relations = List.of(
                 new MemoryRelation(
                         RelationshipType.RELATED_TO,
-                        new MemorySummaryResponse(randomUUID(), "First", "", of(0.9f))
-                ),
+                        new MemorySummaryResponse(randomUUID(), "First", "", of(0.9f))),
                 new MemoryRelation(
                         RelationshipType.SIMILAR_TO,
-                        new MemorySummaryResponse(randomUUID(), "Second", "", of(0.8f))
-                ),
+                        new MemorySummaryResponse(randomUUID(), "Second", "", of(0.8f))),
                 new MemoryRelation(
                         RelationshipType.PART_OF,
-                        new MemorySummaryResponse(randomUUID(), "Third", "", of(0.7f))
-                )
-        );
+                        new MemorySummaryResponse(randomUUID(), "Third", "", of(0.7f))));
 
         // when
         final var result = toMemoryResponse.apply(memoryNode, relations, null);

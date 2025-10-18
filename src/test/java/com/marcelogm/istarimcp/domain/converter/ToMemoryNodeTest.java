@@ -1,7 +1,6 @@
-package com.marcelogm.istarimcp.converter;
+package com.marcelogm.istarimcp.domain.converter;
 
 import com.marcelogm.istarimcp.api.memory.CreateMemoryRequest;
-import com.marcelogm.istarimcp.domain.converter.ToMemoryNode;
 import com.marcelogm.istarimcp.domain.service.EmbeddingService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

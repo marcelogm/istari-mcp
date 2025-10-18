@@ -1,9 +1,8 @@
-package com.marcelogm.istarimcp.service;
+package com.marcelogm.istarimcp.domain.service;
 
 import com.marcelogm.istarimcp.api.relationship.CreateRelationshipRequest;
 import com.marcelogm.istarimcp.domain.converter.ToMemorySummaryResponse;
 import com.marcelogm.istarimcp.domain.repository.MemoryRepository;
-import com.marcelogm.istarimcp.domain.service.RelationshipService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,8 +31,7 @@ class RelationshipServiceTest {
         final var request = new CreateRelationshipRequest(
                 "Memory A",
                 "Memory B",
-                "RELATED_TO"
-        );
+                "RELATED_TO");
 
         when(repository.createRelationship("Memory A", "Memory B", "RELATED_TO"))
                 .thenReturn(true);
@@ -54,15 +52,12 @@ class RelationshipServiceTest {
         final var request = new CreateRelationshipRequest(
                 "Non Existent Memory",
                 "Memory B",
-                "RELATED_TO"
-        );
+                "RELATED_TO");
 
         when(repository.createRelationship("Non Existent Memory", "Memory B", "RELATED_TO"))
                 .thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () ->
-                relationshipService.createRelationship(request)
-        );
+        assertThrows(IllegalArgumentException.class, () -> relationshipService.createRelationship(request));
 
         verify(repository).createRelationship("Non Existent Memory", "Memory B", "RELATED_TO");
     }
@@ -73,12 +68,9 @@ class RelationshipServiceTest {
         final var request = new CreateRelationshipRequest(
                 "Memory A",
                 "Memory B",
-                "INVALID_TYPE"
-        );
+                "INVALID_TYPE");
 
-        assertThrows(IllegalArgumentException.class, () ->
-                relationshipService.createRelationship(request)
-        );
+        assertThrows(IllegalArgumentException.class, () -> relationshipService.createRelationship(request));
 
         verify(repository, never()).createRelationship(anyString(), anyString(), anyString());
     }
